@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Inventory tracking app for interns">
+    <title>CBHP Intern Inventory Tracker</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #252c37;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .main-card {
+            background: rgb(255, 255, 255);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #374151;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1f2937;
+        }
+
+        .btn-notification {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-notification.off {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .btn-large {
+            padding: 12px 32px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .passcode-container {
+            text-align: center;
+            padding: 48px 0;
+        }
+
+        .passcode-card {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .passcode-input-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .passcode-input {
+            padding-right: 40px;
+        }
+
+        .passcode-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-gray {
+            background: #6b7280;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-gray:hover {
+            background: #4b5563;
+        }
+
+        .instructions {
+            background: #eff6ff;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 24px 0;
+        }
+
+        .instructions h3 {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .instructions p {
+            color: #1e40af;
+        }
+
+        .category-section {
+            margin-bottom: 32px;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+            text-transform: capitalize;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .item-card {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .status-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .status-good {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-low {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-gone {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .send-report {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-controls {
+                justify-content: center;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-card">
+            <!-- Header -->
+            <div class="header">
+                <h1 id="mainTitle">📦 CBHP Intern Inventory Tracker</h1>
+                <div class="header-controls">
+                    <button id="notificationBtn" class="btn btn-notification">
+                        🔔 Notifications On
+                    </button>
+                    <button id="accessBtn" class="btn btn-secondary">
+                        🔒 Access
+                    </button>
+                </div>
+            </div>
+
+            <!-- Intern View -->
+            <div id="internView">
+                <div style="margin-bottom: 24px;">
+                    <input type="text" id="internName" class="input" placeholder="Enter your name">
+                </div>
+
+                <div class="instructions">
+                    <h3>Instructions:</h3>
+                    <p>Click on status badges to update inventory: Good → Running Low → Gone → Good</p>
+                </div>
+
+                <!-- Health Snacks -->
+                <div class="category-section">
+                    <h2 class="category-title">Health Snacks</h2>
+                    <div class="items-grid" id="healthSnacksGrid"></div>
+                    <div style="margin-top: 16px;">
+                        <input type="text" id="healthSnacksInput" class="input" placeholder="Add missing health snack item...">
+                        <button onclick="addCustomItem('healthSnacks', 'healthSnacksInput')" class="btn btn-secondary" style="margin-top: 8px;">Add Item</button>
+                    </div>
+                </div>
+
+                <!-- Snacks -->
+                <div class="category-section">
+                    <h2 class="category-title">Snacks</h2>
+                    <div class="items-grid" id="snacksGrid"></div>
+                    <div style="margin-top: 16px;">
+                        <input type="text" id="snacksInput" class="input" placeholder="Add missing snack item...">
+                        <button onclick="addCustomItem('snacks', 'snacksInput')" class="btn btn-secondary" style="margin-top: 8px;">Add Item</button>
+                    </div>
+                </div>
+
+                <!-- Drinks -->
+                <div class="category-section">
+                    <h2 class="category-title">Drinks</h2>
+                    <div class="items-grid" id="drinksGrid"></div>
+                    <div style="margin-top: 16px;">
+                        <input type="text" id="drinksInput" class="input" placeholder="Add missing drink item...">
+                        <button onclick="addCustomItem('drinks', 'drinksInput')" class="btn btn-secondary" style="margin-top: 8px;">Add Item</button>
+                    </div>
+                </div>
+
+                <!-- Protein Shakes -->
+                <div class="category-section">
+                    <h2 class="category-title">Protein Shakes</h2>
+                    <div class="items-grid" id="proteinShakesGrid"></div>
+                    <div style="margin-top: 16px;">
+                        <input type="text" id="proteinShakesInput" class="input" placeholder="Add missing protein shake...">
+                        <button onclick="addCustomItem('proteinShakes', 'proteinShakesInput')" class="btn btn-secondary" style="margin-top: 8px;">Add Item</button>
+                    </div>
+                </div>
+
+                <div class="send-report">
+                    <button id="sendReportBtn" class="btn btn-primary btn-large">
+                        📤 Send Weekly Report to Supervisor
+                    </button>
+                </div>
+            </div>
+
+            <!-- Passcode View -->
+            <div id="passcodeView" class="hidden">
+                <div class="passcode-container">
+                    <div class="passcode-card">
+                        <h2 style="margin-bottom: 16px;">Enter Supervisor Passcode</h2>
+                        <div class="passcode-input-container">
+                            <input type="password" id="passcodeInput" class="input passcode-input" placeholder="Enter passcode">
+                            <button id="passcodeToggle" class="passcode-toggle">👁️</button>
+                        </div>
+                        <div class="btn-group">
+                            <button id="passcodeSubmit" class="btn btn-success">Submit</button>
+                            <button id="passcodeCancel" class="btn btn-gray">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supervisor View -->
+            <div id="supervisorView" class="hidden">
+                <!-- Coffee Cream -->
+                <div class="category-section">
+                    <h2 class="category-title">Coffee Cream</h2>
+                    <div class="items-grid" id="coffeeCreamGrid"></div>
+                </div>
+
+                <!-- Coffee Supply -->
+                <div class="category-section">
+                    <h2 class="category-title">Coffee & Kitchen Supply</h2>
+                    <div class="items-grid" id="coffeeSupplyGrid"></div>
+                </div>
+
+                <!-- Office Supply -->
+                <div class="category-section">
+                    <h2 class="category-title">Office Supply</h2>
+                    <div class="items-grid" id="officeSupplyGrid"></div>
+                </div>
+                
+                <div class="instructions">
+                    <h3>Supervisor Instructions:</h3>
+                    <p>Click on status badges to cycle through: Good → Running Low → Gone → Good</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'intern';
+        let notifications = true;
+        let supervisorUnlocked = false;
+        const correctPasscode = '1234';
+
+        let internInventory = {
+            healthSnacks: {
+                'Granola Bars': 'Good',
+                'Trail Mix': 'Good',
+                'Protein Bars': 'Good',
+                'Dried Fruit': 'Good',
+                'Nuts (Mixed)': 'Good'
+            },
+            snacks: {
+                'Apple Sauce': 'Good',
+                'Nature Bakery Fig Bars': 'Good',
+                'Pop Corners': 'Good',
+                'Beef jerky': 'Good',
+                'Candy bars (minis)': 'Good',
+                'Oikos yogurt': 'Good'
+            },
+            drinks: {
+                'Water Bottles': 'Good',
+                'Grapefruit Fresca': 'Good',
+                'Peach Fresca': 'Good',
+                'La Croix': 'Good',
+                'Body Armour': 'Good',
+                'Pepsi Zero': 'Good',
+                'Coke': 'Good',
+                'Sprite': 'Good',
+                'Vitamin Water': 'Good',
+                'Coconut Bai': 'Good',
+                'Diet Pepsi': 'Good',
+                'Diet Coke': 'Good',
+                'Pepsi': 'Good',
+                'Pepsi Free': 'Good',
+                'Mug Root Beer': 'Good'
+            },
+            proteinShakes: {
+                'Orgain Chocolate Protein Shake': 'Good',
+                'Premier Protein Coffee': 'Good',
+                'Premier Protein Vanilla': 'Good',
+                'Premier Protein Strawberry': 'Good',
+                'Premier Protein Chocolate': 'Good'
+            }
+        };
+
+        let supervisorInventory = {
+            coffeeCream: {
+                'Italian Sweet Crème': 'Good',
+                'Irish Crème': 'Running Low',
+                'Hazelnut': 'Good',
+                'French Vanilla': 'Gone',
+                'Salted Caramel': 'Good',
+                'Pumpkin Spice': 'Good',
+                'Vanilla Caramel': 'Good',
+                'The Original': 'Good'
+            },
+            coffeeSupply: {
+                'Coffee K-Cups': 'Good',
+                'Ground Coffee': 'Good',
+                'Dishwasher Detergent': 'Good',
+                'Dish Soap': 'Good',
+                'White Vinegar': 'Good',
+                'Paper Towel Kirkland': 'Good'
+            },
+            officeSupply: {
+                'Pens': 'Good',
+                'Paper': 'Running Low',
+                'Staplers': 'Good',
+                'Sticky Notes': 'Gone',
+                'Folders': 'Good'
+            }
+        };
+
+        // ----- Remote Sync Configuration -----
+        const REMOTE_API_URL = ''; // e.g., 'https://script.google.com/macros/s/XXXX/exec'
+        const REMOTE_API_TOKEN = ''; // optional shared secret; set in backend too
+
+        let remoteSaveTimeout = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadInitialState();
+            setupEventListeners();
+            renderInternInventory();
+            renderSupervisorInventory();
+            setupNotifications();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('notificationBtn').addEventListener('click', toggleNotifications);
+            document.getElementById('accessBtn').addEventListener('click', handleAccessClick);
+            document.getElementById('passcodeSubmit').addEventListener('click', handlePasscodeSubmit);
+            document.getElementById('passcodeCancel').addEventListener('click', function() {
+                switchView('intern');
+            });
+            document.getElementById('passcodeToggle').addEventListener('click', togglePasscodeVisibility);
+            document.getElementById('passcodeInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handlePasscodeSubmit();
+                }
+            });
+            document.getElementById('sendReportBtn').addEventListener('click', sendWeeklyReport);
+
+            // Persist intern name as it is entered
+            document.getElementById('internName').addEventListener('input', function(e) {
+                try {
+                    localStorage.setItem('internName', e.target.value || '');
+                } catch (err) {}
+            });
+        }
+
+        // ----- Persistence (localStorage + optional remote) -----
+        function isRemoteConfigured() {
+            return typeof REMOTE_API_URL === 'string' && REMOTE_API_URL.trim() !== '';
+        }
+
+        async function loadInitialState() {
+            if (isRemoteConfigured()) {
+                try {
+                    const res = await fetch(REMOTE_API_URL + '?action=get', {
+                        method: 'GET',
+                        headers: REMOTE_API_TOKEN ? { 'X-API-KEY': REMOTE_API_TOKEN } : {}
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && typeof data === 'object') {
+                            if (data.internInventory && typeof data.internInventory === 'object') {
+                                internInventory = data.internInventory;
+                            }
+                            if (data.supervisorInventory && typeof data.supervisorInventory === 'object') {
+                                supervisorInventory = data.supervisorInventory;
+                            }
+                            if (typeof data.internName === 'string') {
+                                const nameInput = document.getElementById('internName');
+                                if (nameInput) nameInput.value = data.internName;
+                            }
+                            // cache remotely loaded state locally
+                            try {
+                                localStorage.setItem('internInventory', JSON.stringify(internInventory));
+                                localStorage.setItem('supervisorInventory', JSON.stringify(supervisorInventory));
+                                if (document.getElementById('internName')) {
+                                    localStorage.setItem('internName', document.getElementById('internName').value || '');
+                                }
+                            } catch (e) {}
+                            return; // loaded from remote successfully
+                        }
+                    }
+                } catch (e) {
+                    // fall through to local load
+                }
+            }
+            loadPersistedState();
+        }
+
+        // Local-only load
+        function loadPersistedState() {
+            try {
+                const savedInternInventory = localStorage.getItem('internInventory');
+                const savedSupervisorInventory = localStorage.getItem('supervisorInventory');
+                const savedInternName = localStorage.getItem('internName');
+
+                if (savedInternInventory) {
+                    const parsedIntern = JSON.parse(savedInternInventory);
+                    if (parsedIntern && typeof parsedIntern === 'object') {
+                        internInventory = parsedIntern;
+                    }
+                }
+
+                if (savedSupervisorInventory) {
+                    const parsedSupervisor = JSON.parse(savedSupervisorInventory);
+                    if (parsedSupervisor && typeof parsedSupervisor === 'object') {
+                        supervisorInventory = parsedSupervisor;
+                    }
+                }
+
+                if (typeof savedInternName === 'string') {
+                    const nameInput = document.getElementById('internName');
+                    if (nameInput) nameInput.value = savedInternName;
+                }
+            } catch (err) {
+                // Ignore parse/storage errors to avoid breaking the app
+            }
+        }
+
+        function persistState() {
+            try {
+                localStorage.setItem('internInventory', JSON.stringify(internInventory));
+                localStorage.setItem('supervisorInventory', JSON.stringify(supervisorInventory));
+                const nameInput = document.getElementById('internName');
+                if (nameInput) {
+                    localStorage.setItem('internName', nameInput.value || '');
+                }
+            } catch (err) {
+                // Storage might be unavailable; fail silently
+            }
+            if (isRemoteConfigured()) {
+                scheduleRemoteSave();
+            }
+        }
+
+        function scheduleRemoteSave() {
+            if (remoteSaveTimeout) {
+                clearTimeout(remoteSaveTimeout);
+            }
+            remoteSaveTimeout = setTimeout(remoteSaveState, 1000);
+        }
+
+        async function remoteSaveState() {
+            try {
+                const payload = {
+                    internInventory,
+                    supervisorInventory,
+                    internName: (document.getElementById('internName')?.value || ''),
+                    updatedAt: new Date().toISOString()
+                };
+                await fetch(REMOTE_API_URL, {
+                    method: 'POST',
+                    headers: Object.assign({ 'Content-Type': 'application/json' }, REMOTE_API_TOKEN ? { 'X-API-KEY': REMOTE_API_TOKEN } : {}),
+                    body: JSON.stringify(payload)
+                });
+            } catch (e) {
+                // ignore network errors to keep UX smooth
+            }
+        }
+
+        function setupNotifications() {
+            if (notifications) {
+                setInterval(function() {
+                    const now = new Date();
+                    const currentTime = now.getHours() * 60 + now.getMinutes();
+                    const shiftEndTimes = [(17 * 60) - 15, (21 * 60) - 15, (13 * 60) - 15]; // 4:45 PM, 8:45 PM, 12:45 PM
+                    
+                    shiftEndTimes.forEach(time => {
+                        if (currentTime === time) {
+                            alert('📋 Reminder: Please complete your inventory tracking before your shift ends in 15 minutes!');
+                        }
+                    });
+                }, 60000);
+            }
+        }
+
+        function toggleNotifications() {
+            notifications = !notifications;
+            const btn = document.getElementById('notificationBtn');
+            if (notifications) {
+                btn.textContent = '🔔 Notifications On';
+                btn.className = 'btn btn-notification';
+                setupNotifications();
+            } else {
+                btn.textContent = '🔔 Notifications Off';
+                btn.className = 'btn btn-notification off';
+            }
+        }
+
+        function handleAccessClick() {
+            if (currentView === 'intern') {
+                switchView('passcode');
+            } else {
+                switchView('intern');
+                supervisorUnlocked = false;
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            
+            // Hide all views
+            document.getElementById('internView').classList.add('hidden');
+            document.getElementById('passcodeView').classList.add('hidden');
+            document.getElementById('supervisorView').classList.add('hidden');
+            
+            // Show selected view
+            if (view === 'intern') {
+                document.getElementById('internView').classList.remove('hidden');
+                document.getElementById('mainTitle').textContent = '📦 CBHP Intern Inventory Tracker';
+                document.getElementById('accessBtn').textContent = '🔒 Access';
+                document.getElementById('accessBtn').className = 'btn btn-secondary';
+            } else if (view === 'passcode') {
+                document.getElementById('passcodeView').classList.remove('hidden');
+            } else if (view === 'supervisor') {
+                document.getElementById('supervisorView').classList.remove('hidden');
+                document.getElementById('mainTitle').textContent = '🔒 Supervisor Dashboard';
+                document.getElementById('accessBtn').textContent = '🔓 Back to Intern View';
+                document.getElementById('accessBtn').className = 'btn btn-primary';
+            }
+        }
+
+        function handlePasscodeSubmit() {
+            const passcode = document.getElementById('passcodeInput').value;
+            if (passcode === correctPasscode) {
+                supervisorUnlocked = true;
+                switchView('supervisor');
+                document.getElementById('passcodeInput').value = '';
+            } else {
+                alert('Incorrect passcode. Please try again.');
+                document.getElementById('passcodeInput').value = '';
+            }
+        }
+
+        function togglePasscodeVisibility() {
+            const input = document.getElementById('passcodeInput');
+            const toggle = document.getElementById('passcodeToggle');
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Good':
+                    return 'status-good';
+                case 'Running Low':
+                    return 'status-low';
+                case 'Gone':
+                    return 'status-gone';
+                default:
+                    return 'status-good';
+            }
+        }
+
+        function getNextStatus(currentStatus) {
+            const statuses = ['Good', 'Running Low', 'Gone'];
+            const currentIndex = statuses.indexOf(currentStatus);
+            return statuses[(currentIndex + 1) % statuses.length];
+        }
+
+        function createItemCard(item, status, category, isIntern) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            
+            const itemName = document.createElement('h3');
+            itemName.className = 'item-name';
+            itemName.textContent = item;
+            
+            const statusBtn = document.createElement('button');
+            statusBtn.className = `status-btn ${getStatusClass(status)}`;
+            statusBtn.textContent = status;
+            statusBtn.onclick = function() {
+                updateItemStatus(category, item, isIntern);
+            };
+            
+            card.appendChild(itemName);
+            card.appendChild(statusBtn);
+            
+            return card;
+        }
+
+        function updateItemStatus(category, item, isIntern) {
+            if (isIntern) {
+                const currentStatus = internInventory[category][item];
+                const newStatus = getNextStatus(currentStatus);
+                internInventory[category][item] = newStatus;
+                renderInternInventory();
+                persistState();
+            } else {
+                const currentStatus = supervisorInventory[category][item];
+                const newStatus = getNextStatus(currentStatus);
+                supervisorInventory[category][item] = newStatus;
+                renderSupervisorInventory();
+                persistState();
+            }
+        }
+
+        function renderInternInventory() {
+            // Health Snacks
+            const healthSnacksGrid = document.getElementById('healthSnacksGrid');
+            healthSnacksGrid.innerHTML = '';
+            Object.entries(internInventory.healthSnacks).forEach(([item, status]) => {
+                healthSnacksGrid.appendChild(createItemCard(item, status, 'healthSnacks', true));
+            });
+            
+            // Snacks
+            const snacksGrid = document.getElementById('snacksGrid');
+            snacksGrid.innerHTML = '';
+            Object.entries(internInventory.snacks).forEach(([item, status]) => {
+                snacksGrid.appendChild(createItemCard(item, status, 'snacks', true));
+            });
+            
+            // Drinks
+            const drinksGrid = document.getElementById('drinksGrid');
+            drinksGrid.innerHTML = '';
+            Object.entries(internInventory.drinks).forEach(([item, status]) => {
+                drinksGrid.appendChild(createItemCard(item, status, 'drinks', true));
+            });
+
+            // Protein Shakes
+            const proteinShakesGrid = document.getElementById('proteinShakesGrid');
+            proteinShakesGrid.innerHTML = '';
+            Object.entries(internInventory.proteinShakes).forEach(([item, status]) => {
+                proteinShakesGrid.appendChild(createItemCard(item, status, 'proteinShakes', true));
+            });
+        }
+
+        function renderSupervisorInventory() {
+            // Coffee Cream
+            const coffeeCreamGrid = document.getElementById('coffeeCreamGrid');
+            coffeeCreamGrid.innerHTML = '';
+            Object.entries(supervisorInventory.coffeeCream).forEach(([item, status]) => {
+                coffeeCreamGrid.appendChild(createItemCard(item, status, 'coffeeCream', false));
+            });
+            
+            // Coffee Supply
+            const coffeeSupplyGrid = document.getElementById('coffeeSupplyGrid');
+            coffeeSupplyGrid.innerHTML = '';
+            Object.entries(supervisorInventory.coffeeSupply).forEach(([item, status]) => {
+                coffeeSupplyGrid.appendChild(createItemCard(item, status, 'coffeeSupply', false));
+            });
+            
+            // Office Supply
+            const officeSupplyGrid = document.getElementById('officeSupplyGrid');
+            officeSupplyGrid.innerHTML = '';
+            Object.entries(supervisorInventory.officeSupply).forEach(([item, status]) => {
+                officeSupplyGrid.appendChild(createItemCard(item, status, 'officeSupply', false));
+            });
+        }
+
+        function sendWeeklyReport() {
+            const internName = document.getElementById('internName').value.trim() || 'Anonymous';
+            
+            // Create formatted report text
+            let reportText = `Intern: ${internName}\n`;
+            reportText += `Date: ${new Date().toLocaleDateString()}\n\n`;
+            reportText += 'INVENTORY REPORT\n';
+            reportText += '================\n\n';
+            
+            // Format each category
+            Object.entries(internInventory).forEach(([category, items]) => {
+                // Convert camelCase to Title Case
+                const categoryTitle = category.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                reportText += `${categoryTitle.toUpperCase()}:\n`;
+                
+                Object.entries(items).forEach(([item, status]) => {
+                    reportText += `- ${item}: ${status}\n`;
+                });
+                reportText += '\n';
+            });
+
+            // Try to open Outlook on the web with prefilled email
+            try {
+                const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent('Coralee.Bleak@eccles.utah.edu')}&subject=${encodeURIComponent('Weekly Inventory Report')}&body=${encodeURIComponent(reportText)}`;
+
+                const tempLink = document.createElement('a');
+                tempLink.href = outlookUrl;
+                tempLink.target = '_blank';
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+
+                alert('📧 Outlook opened with your weekly report draft. If it didn\'t open, copy the text from the next dialog.');
+
+            } catch (error) {
+                // Fallback: show report in alert for manual copying
+                alert(`📧 Weekly Inventory Report\n\n${reportText}\n\nCopy this text and send it to your supervisor manually.`);
+            }
+        }
+
+        // Function to add custom items to categories
+        function addCustomItem(category, inputId) {
+            const input = document.getElementById(inputId);
+            const itemName = input.value.trim();
+            
+            if (itemName === '') {
+                alert('Please enter an item name.');
+                return;
+            }
+            
+            if (internInventory[category][itemName]) {
+                alert('This item already exists in the list.');
+                return;
+            }
+            
+            // Add the new item with 'Good' status
+            internInventory[category][itemName] = 'Good';
+            
+            // Clear the input
+            input.value = '';
+            
+            // Re-render the inventory to show the new item
+            renderInternInventory();
+            persistState();
+            
+            alert(`Added "${itemName}" to ${category.replace(/([A-Z])/g, ' $1').toLowerCase()}.`);
+        }
+    </script>
+</body>
+
+</html>
